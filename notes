@@ -1,0 +1,23 @@
+L’horloge va nous permettre de dater avec le jour, l’heure et l’année les données que nous allons enregistrer dans des mémoires afin d’y avoir accès n’importe quand et n’importe où via l’accès Bluetooth.
+https://www.gotronic.fr/pj-1160.pdf
+Pour cela nous allons utiliser l’horloge DS1307 : 
+Les conditions de fonctionnement de l’horloge sont :
+-	Cette horloge temps réelles nous permet de compter (secondes, minutes, heures, jours et années) jusqu’à 2100.
+-	Elle possède une mémoire RAM de 56 octets qui permet de stocker les données de l’interface série.
+-	Les température fonctionnement sont : de -40°C à +85°C
+Le capteur de température et d’humidité AM2315 :
+Les conditions de fonctionnement du capteur :
+-	Lecture des températures comprise entre -20°C à + 80°C avec +- 0.1°C de précision
+-	Adresse I2C de ce composant est 05C
+-	Rafraichissement des valeurs toutes les 0.5s 
+-	Mesure de l’humidité de 0 à 100% avec +- 2% de précision 
+(Débuter le 10/05/19)
+
+Les tests du capteur de température :
+ 
+
+
+
+
+Résultats après exécution du code :
+ 
