@@ -1,0 +1,23 @@
+#include <Adafruit_AM2315.h>  //ajout de la librairie du capteur 
+#include <Wire.h>  //ajout de la librairie I2C
+
+Adafruit_AM2315 am2315; // déclaration du capteur 
+
+void setup() {
+  
+  Serial.begin(9600);  //initialisation 
+  Serial.println("Test Capteur");
+
+  if (! am2315.begin()) // demande test de présence du capteur
+  {
+     Serial.println("Capteur non trouvé, vérifier le cablâge et les résistances");
+     while (1);
+  }
+}
+
+void loop() {
+  Serial.print("Humidité: "); Serial.println(am2315.readHumidity()); // récupération et affichage de la température
+  Serial.print("Température: "); Serial.println(am2315.readTemperature()); // récupération et affichage de l'humidité
+
+  delay(1000);
+}
