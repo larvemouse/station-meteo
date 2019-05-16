@@ -1,0 +1,41 @@
+#include <SoftwareSerial.h>
+#define RX 11
+#define TX 10
+
+SoftwareSerial mySerial(RX,TX); 
+int i=0;  
+char dataChar[32]={0};
+
+
+void setup() {
+  pinMode(RX,INPUT);
+  pinMode(TX,OUTPUT);
+  mySerial.begin(9600);
+  Serial.begin(9600);
+}
+
+void loop() {
+/*
+if(mySerial.available()){
+
+  do{
+    dataChar[i++]= mySerial.read();
+    
+   delay(3);
+  }while(mySerial.available()>0);
+
+  mySerial.println(dataChar);
+  Serial.println(dataChar);
+
+  for(i=0;i<sizeof(dataChar);i++){
+    dataChar[i]=0;
+  }
+  }*/
+
+ mySerial.println("TT");
+
+ delay(1000);
+}
+
+//while(mySerial.available())
+//Serial.print((char)mySerial.read());
