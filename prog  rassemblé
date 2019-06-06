@@ -1,0 +1,108 @@
+#include <Adafruit_AM2315.h>  //ajout de la librairie du capteur 
+#include <Wire.h>  //ajout de la librairie I2C
+#include "RTClib.h"  // Bibliothèque pour le module RTC
+#include <SoftwareSerial.h>
+#define disk1 0x50    //Address of 24LC256 eeprom chip
+
+unsigned int address = 0;
+unsigned int address1 = 1;
+unsigned int address2 = 2;
+
+SoftwareSerial mavoieserie(11, 10); // (RX, TX) (pin Rx BT, pin Tx BT)
+RTC_DS1307 rtc;      // module RTC de type DS1307
+Adafruit_AM2315 am2315; // déclaration du capteur
+char daysOfTheWeek[7][12] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+
+void setup()
+{
+
+  Serial.begin(9600);  //initialisation
+  Wire.begin(); // initialisation de la liaison I2C
+  mavoieserie.begin(9600);
+
+
+}
+
+void loop()
+{
+  horloge();
+  Temp_Card();
+  Temp_Ext();
+
+
+
+}
+
+void Temp_Ext ()
+{
+  writeEEPROM(disk1, address1, am2315.readTemperature());
+  writeEEPROM(disk1, address, am2315.readHumidity());
+  Serial.print("Température externe: "); Serial.println(readEEPROM(disk1, address1), DEC);
+  delay(1000);
+  Serial.print("Humidité: "); Serial.println(readEEPROM(disk1, address), DEC);
+  mavoieserie.print(readEEPROM(disk1, address1));
+  mavoieserie.print(";");
+  mavoieserie.print(readEEPROM(disk1, address));
+  mavoieserie.print(";");
+  delay(1000);
+
+}
+
+void Temp_Card()
+{
+  int valeur_brute = analogRead(A0); // recupération de la tension sur la broche A0
+  float temperature_celcius = valeur_brute * (5.0 / 1023.0 * 100.0); // transforme la mesure en température en degrès Celcuis
+  writeEEPROM(disk1, address2, temperature_celcius);
+  Serial.print("Température carte: "); Serial.println(readEEPROM(disk1, address2), DEC);
+  mavoieserie.print(readEEPROM(disk1, address2));
+  mavoieserie.print(";");
+  delay(1000);
+
+}
+void horloge()
+{
+  rtc.begin();  //initialisation du module horloge
+  DateTime now = rtc.now();
+  Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);//affiche le jour dela semaine
+  Serial.print(" ");
+  Serial.print(now.day(), DEC); //affiche le jour
+  Serial.print("/");
+  Serial.print(now.month(), DEC); //affiche le mois
+  Serial.print("/");
+  Serial.print(now.year(), DEC); //affice l'année
+  Serial.print(" ");
+  Serial.print(now.hour(), DEC); //affiche l'heure
+  Serial.print(':');
+  Serial.print(now.minute(), DEC); // affiche les minutes
+  Serial.print(':');
+  Serial.print(now.second(), DEC); //affiche les secondes
+  Serial.println();
+
+  delay(1000); //affiche la date toute les secondes
+}
+void writeEEPROM(int deviceaddress, unsigned int eeaddress, byte data )
+{
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddress >> 8));   // MSB
+  Wire.write((int)(eeaddress & 0xFF)); // LSB
+  Wire.write(data);
+  Wire.endTransmission();
+
+  delay(5);
+}
+
+byte readEEPROM(int deviceaddress, unsigned int eeaddress )
+{
+  byte rdata = 0xFF;
+
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddress >> 8));   // MSB
+  Wire.write((int)(eeaddress & 0xFF)); // LSB
+  Wire.endTransmission();
+
+  Wire.requestFrom(deviceaddress, 1);
+
+  if (Wire.available()) rdata = Wire.read();
+
+  return rdata;
+}
